@@ -15,20 +15,19 @@ JsonWebToken (JWT) has been used for authorization and authentication purpose
 
 ### Installing
 
-- download or fork this project
+- Download or fork this project
 - Change the name of .env-sample to .env
 - In .env file
-   - for changing port use PORT variable 
-   - the TOKEN keys for doctor and patient are for jwt verification  your can change the key token values for security purpose but for simple executiion the current values a will still work without changes.
+   - For changing port use PORT variable 
+   - The TOKEN keys for doctor and patient are for jwt verification  your can change the key token values for security purpose but for simple executiion the current values a will still work without changes.
 - In db.js
-  change the database name from HospitalManagment to your desired database name
-   e.i mongoose.connect('mongodb://localhost:27017/databaseName')
+  Change the database name from HospitalManagment to your desired 'databaseName'
+   e.i mongoose.connect('mongodb://localhost:27017/'databaseName'')
 - 
 
 ### Executing program
 
 - How to run the program
-- Step-by-step bullets
 
 ```
 npm i
