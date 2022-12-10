@@ -1,10 +1,10 @@
 const express = require("express")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-const PatientRoute = express.Router()
-const Patients = require("../models/patientModel")
-const Prescription = require("../models/prescriptionModel")
-const Bill = require("../models/billModel")
+const patientRoute = express.Router()
+
+const verifyToken = require("../middleware/verifyPatient.middleware")
+
+
+const patientController = require("../controllers/patient.controller")
 
 
 /**
@@ -31,13 +31,13 @@ const Bill = require("../models/billModel")
  *                 patientAddress:
  *                     type: object
  *                     properties:
- *                         address_line:
+ *                         addressLine:
  *                             type: string 
- *                         City:
+ *                         city:
  *                             type: string
- *                         Postal_Code:
+ *                         postalCode:
  *                             type: number
- *                         Country:
+ *                         country:
  *                             type: string
  *                 patientPhone:
  *                      type: number
@@ -64,7 +64,9 @@ const Bill = require("../models/billModel")
  * @swagger
  * /patient/newPatient:
  *  post:
- *      summary: Registering a new patient  
+ *      summary: Registering a new patient
+ *      tags:
+ *          - patients   
  *      description: Add the new patient data in database
  *      requestBody:
  *          required: true
@@ -79,24 +81,15 @@ const Bill = require("../models/billModel")
  */ 
 
 // creating one record
-PatientRoute.post('/newPatient', async (req,res) => {
-    
-    const patient = new Patients({
-        patientName: req.body.patientName,
-        patientEmail: req.body.patientEmail,
-        patientPassword: await bcrypt.hash(req.body.patientPassword,10),
-        patientAddress: req.body.patientAddress,
-        patientPhone: req.body.patientPhone,
-        
-    })
-    const newPatient = await patient.save()
-    res.json(newPatient);  
-})
+patientRoute.post('/newPatient', patientController.newPatient)
+
 /**
  * @swagger
  * /patient/prescription:
  *  get:
- *      summary: get the prescription of patient  
+ *      summary: get the prescription of patient
+ *      tags:
+ *          - patients  
  *      description: get the prescription of patient
  *      responses:
  *          200:
@@ -105,16 +98,15 @@ PatientRoute.post('/newPatient', async (req,res) => {
  * 
  */
 
-PatientRoute.get('/prescription',verifyToken,async (req,res) => {
-    let prescription = await Prescription.find({patientId:res.current_user.Patient._id})
-    res.json(prescription)
-})
+patientRoute.get('/prescription',verifyToken,patientController.prescription)
 
 /**
  * @swagger
  * /patient/bill:
  *  post:
- *      summary: get the bill based on prescription of patient  
+ *      summary: get the bill based on prescription of patient
+ *      tags:
+ *          - patients  
  *      description: get the bill based on prescription of patient
  *      requestBody:
  *          required: true
@@ -129,34 +121,7 @@ PatientRoute.get('/prescription',verifyToken,async (req,res) => {
  * 
  */
 
-PatientRoute.post('/bill',verifyToken,async (req,res) => {
-    let bill = await Bill.find({prescriptionId:req.body.prescriptionId})
-    res.json(bill)
-})
+patientRoute.post('/bill',verifyToken,patientController.bill)
 
 
-async function verifyToken(req,res,next){
-    const bearerHeader = req.headers['authorization'];
-    
-    const bearer = bearerHeader.split(" ")[1];
-    const tokendecoder = bearerHeader.split(" ");
-    if(typeof bearerHeader !== 'undefined'){
-                
-        jwt.verify(bearer,process.env.PATIENT_ACCESS_TOKEN_SECRET,(err,authdata) =>{
-            if(err){
-                res.json({result:err})
-            }
-            else{
-                res.current_user = JSON.parse(Buffer.from(tokendecoder[1].split(".")[1], 'base64').toString());
-                next()
-            }
-        })
-
-    }
-    else{
-        res.send({"result":"token not provided"})
-    }
-}
-
-
-module.exports = {PatientRoute}
+module.exports = {patientRoute}
