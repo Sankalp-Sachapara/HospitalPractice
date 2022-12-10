@@ -6,10 +6,10 @@ const hospitalSchema = new mongoose.Schema({
     },
     hospitalAddress:{
         type:{
-            address_line: {type: String} , 
-            City: {type:String}, 
-            Postal_Code: {type:Number}, 
-            Country: {type: String},
+            addressLine: {type: String} , 
+            city: {type:String}, 
+            postalCode: {type:Number}, 
+            country: {type: String},
         }
     },
     noOfRooms : {
