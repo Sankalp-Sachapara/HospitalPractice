@@ -4,10 +4,11 @@ Hospital Managment api
 
 ## Description
 
-A simple Api which can e used for y hospitals for managment the records of doctors, patients, prescriptions,bills etc.
-express framework along with mongoose ODM for connection between nodejs and mongoDB.
-Swagger has been used in the project for documentation of API.
-JsonWebToken (JWT) has been used for authorization and authentication purpose
+A simple Api which can be used for  hospitals or administration for managing records of doctors, patients, prescriptions,bills etc.
+In the Project
+express framework along with mongoose ODM for connection between nodejs and mongoDB is been used.
+Swagger has been used for documentation of API.
+JsonWebToken (JWT) has been used for authorization and authentication purpose.
 
 
 
