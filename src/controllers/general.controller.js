@@ -44,7 +44,7 @@ exports.searchDoctor = async(req,res) =>{
         }
         let limit = 3
         
-        let doctors = await Doctors.find({doctorName:{$regex:'.*' + search + '.*',$options:'i'}})
+        let doctors = await Doctors.find({doctorName:{$regex:`${search}`,$options:'i'}})
         .select({_id: 0,doctorEmail : 0, doctorPassword:0, hospitalId : 0, __v : 0})
         .limit(limit * 1)
         .skip((page -1) * limit)

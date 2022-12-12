@@ -36,9 +36,9 @@ generalRoute.get('/',generalController.welcome )
 
 /**
  * @swagger
- * /general/hospitalList:
+ * /general/hospital:
  *  get:
- *      summary: The get hospital data from database
+ *      summary: To get List of hospital data from database
  *      tags:
  *          - general  
  *      description: displaying all hospital data from database
@@ -48,12 +48,12 @@ generalRoute.get('/',generalController.welcome )
  *              
  */ 
 
-generalRoute.get('/hospitalList', generalController.hospitalList)
+generalRoute.get('/hospital', generalController.hospitalList)
 
 
 /**
  * @swagger
- * /general/searchDoctor/{doctorName}:
+ * /general/search/{doctorName}:
  *  get:
  *      summary: For Searching a doctor 
  *      tags:
@@ -77,7 +77,7 @@ generalRoute.get('/hospitalList', generalController.hospitalList)
  *              
  */
 
-generalRoute.get("/searchDoctor/:doctorName",generalController.searchDoctor)
+generalRoute.get("/search/:doctorName",generalController.searchDoctor)
 
 
 

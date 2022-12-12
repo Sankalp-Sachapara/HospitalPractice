@@ -84,7 +84,7 @@ const doctorController = require("../controllers/doctor.controller")
 
 /**
  * @swagger
- * /doctor/newDoctor:
+ * /doctor/:
  *  post:
  *      summary: Registering a new Doctor
  *      tags:
@@ -102,7 +102,7 @@ const doctorController = require("../controllers/doctor.controller")
  *              
  */ 
 
-doctorRoute.post('/newDoctor',doctorController.newDoctor)
+doctorRoute.post('/',doctorController.newDoctor)
 
 /**
  * @swagger
@@ -128,7 +128,7 @@ doctorRoute.post('/hospital',verifyToken, doctorController.newHospital)
 
 /**
  * @swagger
- * /doctor/newMedicine:
+ * /doctor/medicine:
  *  post:
  *      summary: Registering a new Medicine
  *      tags:
@@ -146,11 +146,11 @@ doctorRoute.post('/hospital',verifyToken, doctorController.newHospital)
  *              
  */ 
 
-doctorRoute.post('/newMedicine',verifyToken,doctorController.newMedicine)
+doctorRoute.post('/medicine',verifyToken,doctorController.newMedicine)
 
 /**
  * @swagger
- * /doctor/addPrescription:
+ * /doctor/prescription:
  *  post:
  *      summary: Add a prescription for a patient
  *      tags:
@@ -168,11 +168,11 @@ doctorRoute.post('/newMedicine',verifyToken,doctorController.newMedicine)
  *              
  */ 
 
-doctorRoute.post('/addPrescription',verifyToken, doctorController.addPrescription)
+doctorRoute.post('/prescription',verifyToken, doctorController.addPrescription)
 
 /**
  * @swagger
- * /doctor/addPrescription/addMedicine:
+ * /doctor/prescription/medicine:
  *  post:
  *      summary: Add medicine for a prescription of a  patient
  *      tags:
@@ -191,7 +191,7 @@ doctorRoute.post('/addPrescription',verifyToken, doctorController.addPrescriptio
  */ 
 
 
-doctorRoute.post('/addPrescription/addMedicine',verifyToken,doctorController.addPrescriptionMedicine)
+doctorRoute.post('/prescription/medicine',verifyToken,doctorController.addPrescriptionMedicine)
 
 /** 
 * @swagger
@@ -217,12 +217,12 @@ doctorRoute.post('/bill', verifyToken,doctorController.bill)
 
 /**
  * @swagger
- * /doctor/searchPatient:
+ * /doctor/search:
  *  get:
- *      summary: For Searching a doctor
+ *      summary: For Searching a patient for user user
  *      tags:
  *          - doctors  
- *      description: For Searching a doctor
+ *      description: For Searching a patient
  *      parameters:
  *          - name: patientName
  *            in: query
@@ -260,7 +260,7 @@ doctorRoute.post('/bill', verifyToken,doctorController.bill)
  *              
  */
 
- doctorRoute.get("/searchPatient",verifyToken,doctorController.searchPatient)
+ doctorRoute.get("/search",verifyToken,doctorController.searchPatient)
 
 
 

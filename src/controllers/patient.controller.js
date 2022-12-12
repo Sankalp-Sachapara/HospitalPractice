@@ -51,7 +51,7 @@ exports.newPatient = async (req,res) => {
 
 exports.prescription =  async (req,res) => {
     try{
-        let prescription = await Prescription.find({patientId:res.current_user.patient._id})
+        let prescription = await Prescription.find({patientId:res.current_user.data._id})
         return res.json({
                           status : "Success",
                           error : false,

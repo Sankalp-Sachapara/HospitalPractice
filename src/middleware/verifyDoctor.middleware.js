@@ -12,7 +12,7 @@ async function verifyToken(req,res,next){
                 res.json({result:err})
             }
             else{
-                res.current_user = JSON.parse(Buffer.from(tokendecoder[1].split(".")[1], 'base64').toString());
+                res.currentUser = JSON.parse(Buffer.from(tokendecoder[1].split(".")[1], 'base64').toString());
                 next()
             }
         })

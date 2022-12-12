@@ -1,13 +1,13 @@
-const Joi = require("joi")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const Doctors = require("../models/doctor.model");
 const Patients = require("../models/patient.model")
 
 const {authSchema} = require("../validators/auth.validate");
+const { verify } = require("../utils/common");
 
 
-var refreshTokens = []
+
 
 exports.login = async (req,res) => {
     try{
@@ -21,35 +21,27 @@ exports.login = async (req,res) => {
         if (await bcrypt.compare(result.password, doctor.doctorPassword)) 
             {   
                 
+                const tokens = verify(doctor,process.env.DOCTOR_ACCESS_TOKEN_SECRET)
                 
-                //access token for buyer
-                const accessToken = jwt.sign({doctor}, process.env.DOCTOR_ACCESS_TOKEN_SECRET, {expiresIn: "60m"})
-                //refresh token for seller
-                const refreshToken = jwt.sign({doctor}, process.env.DOCTOR_REFRESH_TOKEN_SECRET, {expiresIn: "20m"})
-                refreshTokens.push(refreshToken)
                 return res.json (
                     {
                         status : "Success",
                         error : false,
                         message : "Doctor successfully logged in ",
-                        data : {accessToken: accessToken, refreshToken: refreshToken }
+                        data : {tokens}
                     }
                 )
             } 
         }
         else if(patient != null ){
             if (await bcrypt.compare(result.password, patient.patientPassword)) {
-                //access token for seller
-                const accessToken = jwt.sign({patient}, process.env.PATIENT_ACCESS_TOKEN_SECRET, {expiresIn: "60m"})
-                //refresh token for buyer
-                const refreshToken = jwt.sign({patient}, process.env.PATIENT_REFRESH_TOKEN_SECRET, {expiresIn: "20m"})
-                refreshTokens.push(refreshToken)
+                const tokens = verify(patient,process.env.PATIENT_ACCESS_TOKEN_SECRET)
                 return res.json (
                     {
                         status : "Success",
                         error : false,
                         message : "Patient successfully logged in",
-                        data : {accessToken: accessToken, refreshToken: refreshToken }
+                        data : {tokens }
                     }
                 )
             
