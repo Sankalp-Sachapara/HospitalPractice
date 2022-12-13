@@ -144,9 +144,9 @@ exports.addPrescription = async(req,res) => {
 
         const patient = await Patients.findById(result.patientId)
         const prescription = new Prescription({
-            doctorId: res.current_user.doctor._id,
+            doctorId: res.currentUser.data._id,
             patientId: result.patientId,
-            doctorName: res.current_user.doctor.doctorName,
+            doctorName: res.currentUser.data.doctorName,
             patientName: patient.patientName,
             diagnose: result.diagnose,
         })
@@ -169,6 +169,7 @@ exports.addPrescription = async(req,res) => {
             })
         }
         else{
+            console.log(err)
         return res.json({
             status : "Failed",
             error : true,
@@ -232,7 +233,7 @@ exports.bill =  async (req,res) =>{
     try{
         const result = await generatebillSchema.validateAsync(req.body)
         let prescription = await Prescription.findById(result.prescriptionId)
-        let hospital = await Hospital.findById(res.current_user.doctor.hospitalId)
+        let hospital = await Hospital.findById(res.currentUser.data.hospitalId)
         let patient = await Patients.findById(prescription.patientId)
         var days = 0
         if(result.noOfDays < 0){
@@ -249,7 +250,7 @@ exports.bill =  async (req,res) =>{
         const bill= new Bill({
             prescriptionId: result.prescriptionId,
             hospitalName: hospital.hospitalName,
-            doctorName: res.current_user.doctor.doctorName,
+            doctorName: res.currentUser.data.doctorName,
             patientName: patient.patientName,
             doctorCharge: result.doctorCharge,
             roomCharge: totalRoomCharge,
@@ -278,6 +279,7 @@ exports.bill =  async (req,res) =>{
             })
         }
         else{
+            console.log(err)
         return res.json({
             status : "Failed",
             error : true,
@@ -299,41 +301,32 @@ exports.searchPatient = async(req,res) =>{
         if(result.page){
             page = result.page
         }
-        let limit = 1
-        
+        let limit = 3
+        let currentUserData = res.currentUser.data._id
         let prescription = await Prescription.aggregate([
-            {$match: {"doctorId":res.current_user.doctor._id }},
-            {$group: {patientName : search, created_at :{$and:[{$gte: fromDate},{$lte: updateToDate}]} }},
-            {$sort: { created_at: -1 }},
-            {$limit: limit * 1},
+            {$match: {$and:[{doctorId: currentUserData},{patientName: search}]}},
+            {$project: {
+                patientName : 1,
+                diagnose: 1,
+                createdAt :{$and:[{$gte: ["$createdAt",fromDate]},["$createdAt",updateToDate]]} }},
+            {$sort: { createdAt: -1 }},
             {$skip: (page -1) * limit},
+            {$limit: limit * 1},
         ])
-        /*
-        let prescription = await Prescription.find({"$expr": { 
-            "$and": [
-                { "$eq": ["$doctorId", res.current_user.doctor._id] },
-                { "$eq": [ "$patientName", search ]},
-                {"$gte":["$created_at", fromDate]},
-                { "$lte": ["$created_at",  updateToDate ]},
-            ]
-         }
-        })
-        .sort({created_at: -1 })
-        .limit(limit * 1)
-        .skip((page -1) * limit)
-        .exec();
-        */     
+             
     
         let count = await Prescription.aggregate([
-            {$match: {"doctorId":res.current_user.doctor._id }},
-            {$group: {patientName : search, created_at :{$and:[{$gte: fromDate},{$lte: updateToDate}]} }},
-            {$sort: { created_at: -1 }},
-            {$limit: limit * 1},
+            {$match: {$and:[{doctorId: currentUserData},{patientName: search}]}},
+            {$project: {
+                createdAt :{$and:[{$gte: ["$createdAt",fromDate]},["$createdAt",updateToDate]]} }},
+            {$sort: { createdAt: -1 }},
             {$skip: (page -1) * limit},
+            {$limit: limit * 1},
         ])
-        .countDocuments();
+        // .countDocuments();
         let totalPages = Math.ceil(count/limit)
         let currentPage = page
+        
         
         return res.json({
                             status : "Success",
@@ -354,6 +347,7 @@ exports.searchPatient = async(req,res) =>{
             })
         }
         else{
+            console.log(err)
         return res.json({
             status : "Failed",
             error : true,

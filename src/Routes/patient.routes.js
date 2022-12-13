@@ -62,7 +62,7 @@ const patientController = require("../controllers/patient.controller")
 
 /**
  * @swagger
- * /patient/newPatient:
+ * /patient/:
  *  post:
  *      summary: Registering a new patient
  *      tags:
@@ -81,7 +81,7 @@ const patientController = require("../controllers/patient.controller")
  */ 
 
 // creating one record
-patientRoute.post('/newPatient', patientController.newPatient)
+patientRoute.post('/', patientController.newPatient)
 
 /**
  * @swagger

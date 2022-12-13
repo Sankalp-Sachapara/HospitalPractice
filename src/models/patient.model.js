@@ -35,7 +35,7 @@ const patientSchema = new mongoose.Schema({
         type:String
     },
 },
-    {timestamps: { createdAt: 'created_at' } },
+    {timestamps: { createdAt: 'createdAt' } },
 )
 
 module.exports = mongoose.model('Patients', patientSchema);

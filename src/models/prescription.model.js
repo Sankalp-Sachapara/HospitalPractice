@@ -29,7 +29,7 @@ const prescriptionSchema = new mongoose.Schema({
     },
     medicines:[medicinesSchema],
 },
-{timestamps: { createdAt: 'created_at' } }
+{timestamps: { createdAt: 'createdAt' } }
 )
 
 module.exports = mongoose.model('Prescription', prescriptionSchema);
