@@ -5,7 +5,7 @@ const newDoctorSchema = Joi.object({
     doctorEmail : Joi.string().email().lowercase().required(),
     doctorPassword : Joi.string().required(),
     doctorDepartment: Joi.string().required(),
-    hospitalId: Joi.string().required(),
+    
     
 })
 
@@ -31,6 +31,7 @@ const newMedicineSchema = Joi.object({
 })
 
 const addPrescriptionSchema = Joi.object({
+    hospitalId: Joi.string().required(),
     patientId: Joi.string().required(),
     diagnose:Joi.string().required(),
 })
@@ -54,6 +55,13 @@ const searchPatientSchema = Joi.object({
     toDate:Joi.date().required(),
 })
 
+const visitSchema = Joi.object({
+    hospitalId:Joi.string(),
+    timings: Joi.object({
+        from:Joi.string().required().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/), // time validation remaining
+        to:Joi.string().required().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+    }),
+})
 
 module.exports = {
     newDoctorSchema, 
@@ -63,4 +71,5 @@ module.exports = {
     addMedicinePrescription,
     generatebillSchema,
     searchPatientSchema,
+    visitSchema,
 }
