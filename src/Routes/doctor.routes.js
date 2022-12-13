@@ -20,12 +20,12 @@ const doctorController = require("../controllers/doctor.controller")
  *                     type: string
  *                 doctorDepartment:
  *                     type: string
- *                 hospitalId:
- *                     type: string
  *          Prescription:
  *             type: object
  *             properties:
  *                 patientId:
+ *                     type: string
+ *                 hospitalId:
  *                     type: string
  *                 diagnose:
  *                     type: string
@@ -77,7 +77,21 @@ const doctorController = require("../controllers/doctor.controller")
  *                 noOfDays:
  *                      type: number
  *                 operationCharge:
- *                      type: number                     
+ *                      type: number
+ *          visit:
+ *              type: object
+ *              properties:
+ *                  hospitalId:
+ *                      type: string
+ *                  timings:
+ *                      type: object
+ *                      properties:
+ *                          from:
+ *                              type: string
+ *                              example: 12:00
+ *                          to:
+ *                              type: string
+ *                              example: 24:00                     
  *          
  *             
  */
@@ -126,6 +140,27 @@ doctorRoute.post('/',doctorController.newDoctor)
 
 doctorRoute.post('/hospital',verifyToken, doctorController.newHospital)
 
+/**
+ * @swagger
+ * /doctor/visits:
+ *  post:
+ *      summary: Add visits data for doctor in a hospital
+ *      tags:
+ *          - doctors 
+ *      description: Add visits data for doctor in a hospital
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/visit'
+ *      responses:
+ *          200:
+ *              description: Added Successfully
+ *              
+ */
+
+doctorRoute.post('/visits',verifyToken,doctorController.visits)
 /**
  * @swagger
  * /doctor/medicine:
