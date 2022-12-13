@@ -4,6 +4,7 @@ const Patients = require("../models/patient.model")
 const Medicine = require("../models/medicine.model")
 const Hospital = require("../models/hospital.model")
 const Bill = require("../models/bill.model")
+const Visit = require("../models/visits.model")
 
 const bcrypt = require("bcrypt")
 const { newDoctorSchema, 
@@ -12,23 +13,22 @@ const { newDoctorSchema,
         addPrescriptionSchema, 
         addMedicinePrescription, 
         generatebillSchema,
-        searchPatientSchema
+        searchPatientSchema,
+        visitSchema
       } = require("../validators/doctor.validate")
 
 
 exports.newDoctor = async (req, res) =>{
     try{
         const result = await newDoctorSchema.validateAsync(req.body)
-        const hospital = await Hospital.findById(result.hospitalId)
-        if(hospital != null || hospital != undefined){
-    
+        // const hospital = await Hospital.findById(result.hospitalId)
             const doctor = new Doctors({
                 doctorName: result.doctorName,
                 doctorEmail: result.doctorEmail,
                 doctorPassword: await bcrypt.hash(result.doctorPassword,10),
                 doctorDepartment: result.doctorDepartment,
-                hospitalId: result.hospitalId,
-                hospitalName: hospital.hospitalName
+                // hospitalId: result.hospitalId,
+                // hospitalName: hospital.hospitalName
                 
             })
             const newDoctor = await doctor.save()
@@ -38,14 +38,14 @@ exports.newDoctor = async (req, res) =>{
                                 message : "Created a new doctor user",
                                 data : newDoctor 
                             });  
-        }
+        
     }
     catch(err){
         if(err.isJoi === true){
             return res.json({
                 status : "Failed  validation",
                 error : true,
-                message : "Failed to displayed bill",
+                message : "Failed to create new user",
                 data : { result: err}
             })
         }
@@ -53,7 +53,7 @@ exports.newDoctor = async (req, res) =>{
         return res.json({
             status : "Failed",
             error : true,
-            message : "Failed to find the hospital id",
+            message : "Failed to create new user",
             data : { result: err}
           })
         }
@@ -141,15 +141,20 @@ exports.newMedicine = async (req,res) => {
 exports.addPrescription = async(req,res) => {
     try{
         const result = await addPrescriptionSchema.validateAsync(req.body)
+        const hospital = await Hospital.findById(result.hospitalId)
 
+        if(hospital != null || hospital != undefined){
         const patient = await Patients.findById(result.patientId)
         const prescription = new Prescription({
             doctorId: res.currentUser.data._id,
+            hospitalId: result.hospitalId,
             patientId: result.patientId,
             doctorName: res.currentUser.data.doctorName,
             patientName: patient.patientName,
             diagnose: result.diagnose,
+            
         })
+        
         
         const newPrescription = await prescription.save()
         return res.json({
@@ -158,6 +163,16 @@ exports.addPrescription = async(req,res) => {
                         message : "Successfully added a Prescription",
                         data : newPrescription 
                         }); 
+        }
+        else{
+            return res.json({
+                status : "Failed  ",
+                error : true,
+                message : "Hospital not found ",
+                data : { result: err}
+                }); 
+
+        }
     }
     catch(err){
         if(err.isJoi === true){
@@ -246,7 +261,7 @@ exports.bill =  async (req,res) =>{
         let medicineTotal = prescription.medicines.reduce((a,b)=> a + b.medicineCost,0)
         let totalCharges = result.doctorCharge + totalRoomCharge + result.operationCharge + medicineTotal
         
-        // console.log(totalCharges)
+        
         const bill= new Bill({
             prescriptionId: result.prescriptionId,
             hospitalName: hospital.hospitalName,
@@ -323,7 +338,7 @@ exports.searchPatient = async(req,res) =>{
             {$skip: (page -1) * limit},
             {$limit: limit * 1},
         ])
-        // .countDocuments();
+        
         let totalPages = Math.ceil(count/limit)
         let currentPage = page
         
@@ -352,6 +367,51 @@ exports.searchPatient = async(req,res) =>{
             status : "Failed",
             error : true,
             message : "Failed to Search Patient",
+            data : { result: err}
+          })
+        }
+    }
+}
+
+exports.visits = async(req,res) =>{
+    try{
+        const result = await visitSchema.validateAsync(req.body)
+        const hospital = await Hospital.findById(result.hospitalId)
+            if(hospital != null){
+            const visit = new Visit({
+                doctorId: res.currentUser.data._id,
+                hospitalId: result.hospitalId,
+                hospitalName: hospital.hospitalName,
+                timings: result.timings,
+            })
+            const newVisit = await visit.save()
+            return res.json({
+                            status : "Success",
+                            error : false,
+                            message : "Successfully registered a new visit in a hospital",
+                            data : newVisit
+                            });
+            }
+            else{
+                return res.status(404).send ("Hospital does not exist, Register new one!")
+            } 
+    }
+    catch(err){
+        
+        if(err.isJoi === true){
+            return res.json({
+                status : "Failed  validation",
+                error : true,
+                message : "Failed to set a visiting",
+                data : { result: err}
+            })
+        }
+        else{
+            console.log(err)
+        return res.json({
+            status : "Failed",
+            error : true,
+            message : "Failed to set a visiting",
             data : { result: err}
           })
         }

@@ -15,6 +15,9 @@ const prescriptionSchema = new mongoose.Schema({
     doctorId:{
         type: String
     },
+    hospitalId:{
+        type: String
+    },
     doctorName:{
         type: String
     },
